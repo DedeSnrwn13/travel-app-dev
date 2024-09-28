@@ -63,8 +63,44 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  search() {
-    return const SizedBox();
+  Container search() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.grey[300]!,
+          width: 1,
+        ),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 30),
+      padding: const EdgeInsets.only(left: 24),
+      child: Row(
+        children: [
+          const Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                isDense: true,
+                border: InputBorder.none,
+                hintText: 'Search destination here...',
+                hintStyle: TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w400,
+                ),
+                contentPadding: EdgeInsets.all(0),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          IconButton.filledTonal(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.search,
+              size: 24,
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   categories() {
