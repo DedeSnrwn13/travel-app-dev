@@ -6,15 +6,15 @@ import 'package:travel_app/features/destination/data/models/destionation_model.d
 
 const cacheAllDestinationKey = 'all_destination';
 
-abstract class DestinationLocalDatasource {
+abstract class DestinationLocalDataSource {
   Future<List<DestinationModel>> getAll();
   Future<bool> cacheAll(List<DestinationModel> list);
 }
 
-class DestinationLocalDatasourceIpml implements DestinationLocalDatasource {
+class DestinationLocalDataSourceIpml implements DestinationLocalDataSource {
   final SharedPreferences pref;
 
-  DestinationLocalDatasourceIpml(this.pref);
+  DestinationLocalDataSourceIpml(this.pref);
 
   @override
   Future<bool> cacheAll(List<DestinationModel> list) async {

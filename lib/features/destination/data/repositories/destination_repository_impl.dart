@@ -12,8 +12,8 @@ import 'package:travel_app/features/destination/domain/repositories/destination_
 
 class DestinationRepositoryImpl implements DestinationRepository {
   final NetworkInfo networkInfo;
-  final DestinationLocalDatasource localDatasource;
-  final DestinationRemoteDatasource remoteDatasource;
+  final DestinationLocalDataSource localDatasource;
+  final DestinationRemoteDataSource remoteDatasource;
 
   DestinationRepositoryImpl({
     required this.networkInfo,

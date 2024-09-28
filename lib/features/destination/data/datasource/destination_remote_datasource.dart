@@ -5,7 +5,7 @@ import 'package:travel_app/core/error/exceptions.dart';
 import 'package:travel_app/features/destination/data/models/destionation_model.dart';
 import 'package:http/http.dart' as http;
 
-abstract class DestinationRemoteDatasource {
+abstract class DestinationRemoteDataSource {
   Future<List<DestinationModel>> all();
 
   Future<List<DestinationModel>> top();
@@ -13,7 +13,7 @@ abstract class DestinationRemoteDatasource {
   Future<List<DestinationModel>> search(String query);
 }
 
-class DestionationRemoteDataSourceImpl implements DestinationRemoteDatasource {
+class DestionationRemoteDataSourceImpl implements DestinationRemoteDataSource {
   final http.Client client;
 
   DestionationRemoteDataSourceImpl(this.client);
