@@ -56,6 +56,8 @@ class _DetailDestinationPageState extends State<DetailDestinationPage> {
           const SizedBox(height: 24),
           details(),
           const SizedBox(height: 24),
+          review(),
+          const SizedBox(height: 30),
         ],
       ),
     );
@@ -310,6 +312,112 @@ class _DetailDestinationPageState extends State<DetailDestinationPage> {
             color: Colors.black54,
           ),
         ),
+      ],
+    );
+  }
+
+  Widget review() {
+    List list = [
+      [
+        'Jhon Dipsy',
+        'assets/images/p1.jpg',
+        4.9,
+        'Best place',
+        '2023-01-02',
+      ],
+      [
+        'Mikael Lunch',
+        'assets/images/p2.jpg',
+        4.3,
+        'Unforgettable',
+        '2023-03-21',
+      ],
+      [
+        'Dinner Sopi',
+        'assets/images/p3.jpg',
+        5,
+        'Nice one',
+        '2023-09-02',
+      ],
+      [
+        'Loro Sepuh',
+        'assets/images/p4.jpg',
+        4.5,
+        'You should go with your family',
+        '2023-09-24',
+      ],
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Reviews',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        ...list.map((e) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 15,
+                  backgroundImage: AssetImage(e[1]),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            e[0],
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          RatingBar.builder(
+                            initialRating: e[2].toDouble(),
+                            allowHalfRating: true,
+                            unratedColor: Colors.grey,
+                            itemBuilder: (context, index) => const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                            onRatingUpdate: (value) {},
+                            itemSize: 12,
+                            ignoreGestures: true,
+                          ),
+                          const Spacer(),
+                          Text(
+                            DateFormat('d MMM').format(DateTime.parse(e[4])),
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        e[3],
+                        style: const TextStyle(
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+        })
       ],
     );
   }
