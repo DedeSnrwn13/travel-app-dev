@@ -6,6 +6,7 @@ import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 import 'package:travel_app/api/urls.dart';
 import 'package:travel_app/features/destination/domain/entities/destination_entity.dart';
 import 'package:travel_app/features/destination/presentation/widgets/circle_loading.dart';
+import 'package:travel_app/features/destination/presentation/widgets/gallery_photo.dart';
 
 class DetailDestinationPage extends StatefulWidget {
   const DetailDestinationPage({super.key, required this.destination});
@@ -50,21 +51,29 @@ class _DetailDestinationPageState extends State<DetailDestinationPage> {
       },
       itemBuilder: (context, index) {
         if (index == 2) {
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                itemGalleryImage(index),
-                Container(
-                  color: Colors.black.withOpacity(0.3),
-                  alignment: Alignment.center,
-                  child: const Text(
-                    '+ More',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+          return GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => GalleryPhoto(images: widget.destination.images),
+              );
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  itemGalleryImage(index),
+                  Container(
+                    color: Colors.black.withOpacity(0.3),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      '+ More',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         }
