@@ -1,6 +1,9 @@
+import 'package:d_method/d_method.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:intl/intl.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 import 'package:travel_app/api/urls.dart';
@@ -27,6 +30,29 @@ class _DetailDestinationPageState extends State<DetailDestinationPage> {
         children: [
           const SizedBox(height: 10),
           gallery(),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    location(),
+                    const SizedBox(height: 4),
+                    category(),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  rate(),
+                  const SizedBox(height: 4),
+                  rateCount(),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
         ],
       ),
     );
@@ -144,6 +170,83 @@ class _DetailDestinationPageState extends State<DetailDestinationPage> {
             BackButton(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget location() {
+    return Row(
+      children: [
+        Container(
+          width: 20,
+          height: 20,
+          alignment: Alignment.centerLeft,
+          child: Icon(
+            Icons.location_on,
+            color: Theme.of(context).primaryColor,
+            size: 20,
+          ),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          widget.destination.location,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.black54,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget category() {
+    return Row(
+      children: [
+        Container(
+          width: 20,
+          height: 20,
+          alignment: Alignment.center,
+          child: Icon(
+            Icons.fiber_manual_record,
+            color: Theme.of(context).primaryColor,
+            size: 15,
+          ),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          widget.destination.category,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.black54,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget rate() {
+    return RatingBar.builder(
+      initialRating: widget.destination.rate,
+      allowHalfRating: true,
+      unratedColor: Colors.grey,
+      itemBuilder: (context, index) => const Icon(
+        Icons.star,
+        color: Colors.amber,
+      ),
+      onRatingUpdate: (value) {},
+      itemSize: 15,
+      ignoreGestures: true,
+    );
+  }
+
+  Widget rateCount() {
+    String rate = DMethod.numberAutoDigit(widget.destination.rate);
+    String rateCount = NumberFormat.compact().format(widget.destination.rateCount);
+
+    return Text(
+      '$rate / $rateCount reviews',
+      style: TextStyle(
+        color: Colors.grey[500],
       ),
     );
   }
