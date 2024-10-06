@@ -1,8 +1,11 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:travel_app/api/urls.dart';
 import 'package:travel_app/features/destination/domain/entities/destination_entity.dart';
+import 'package:travel_app/features/destination/presentation/bloc/all_destination/all_destination_bloc.dart';
 import 'package:travel_app/features/destination/presentation/bloc/top_destination/top_destination_bloc.dart';
 import 'package:travel_app/features/destination/presentation/widgets/circle_loading.dart';
 import 'package:travel_app/features/destination/presentation/widgets/text_failure.dart';
@@ -22,6 +25,7 @@ class _HomePageState extends State<HomePage> {
 
   refresh() {
     context.read<TopDestinationBloc>().add(OnGetTopDestination());
+    context.read<AllDestinationBloc>().add(OnGetAllDestination());
   }
 
   @override
@@ -361,7 +365,160 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  allDestination() {
-    return const SizedBox();
+  Padding allDestination() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'All Destination',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+              Text(
+                'See All',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          BlocBuilder<AllDestinationBloc, AllDestinationState>(
+            builder: (context, state) {
+              if (state is AllDestinationLoading) return const CircleLoading();
+
+              if (state is AllDestinationFailure) return TextFailure(message: state.message);
+
+              if (state is AllDestinationLoaded) {
+                List<DestinationEntity> list = state.data;
+
+                return ListView.builder(
+                  itemCount: list.length,
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    DestinationEntity destination = list[index];
+
+                    return itemAllDestination(destination);
+                  },
+                );
+              }
+
+              return const SizedBox(height: 120);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget itemAllDestination(DestinationEntity destination) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: ExtendedImage.network(
+              URLs.image(destination.cover),
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+              handleLoadingProgress: true,
+              loadStateChanged: (state) {
+                if (state.extendedImageLoadState == LoadState.failed) {
+                  return AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: Material(
+                      borderRadius: BorderRadius.circular(16),
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.broken_image,
+                        color: Colors.black,
+                      ),
+                    ),
+                  );
+                }
+
+                if (state.extendedImageLoadState == LoadState.loading) {
+                  return AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: Material(
+                      borderRadius: BorderRadius.circular(16),
+                      color: Colors.grey[300],
+                      child: const CircleLoading(),
+                    ),
+                  );
+                }
+
+                return null;
+              },
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  destination.name,
+                  style: const TextStyle(
+                    height: 1,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    RatingBar.builder(
+                      initialRating: destination.rate,
+                      allowHalfRating: true,
+                      unratedColor: Colors.grey,
+                      itemBuilder: (context, index) => const Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                      ),
+                      onRatingUpdate: (value) {},
+                      itemSize: 15,
+                      ignoreGestures: true,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '(${DMethod.numberAutoDigit(destination.rate)} / ${NumberFormat.compact().format(destination.rateCount)})',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  destination.description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    height: 1,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
   }
 }

@@ -7,4 +7,4 @@ sealed class AllDestinationEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class onGetAllDestination extends AllDestinationEvent {}
+class OnGetAllDestination extends AllDestinationEvent {}

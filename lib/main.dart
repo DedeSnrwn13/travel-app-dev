@@ -6,7 +6,6 @@ import 'package:travel_app/features/destination/presentation/bloc/all_destinatio
 import 'package:travel_app/features/destination/presentation/bloc/search_destination/search_destination_bloc.dart';
 import 'package:travel_app/features/destination/presentation/bloc/top_destination/top_destination_bloc.dart';
 import 'package:travel_app/features/destination/presentation/cubit/dashboard_cubit.dart';
-import 'package:travel_app/features/destination/presentation/pages/dashboard.dart';
 import 'package:travel_app/injection.dart';
 
 Future<void> main() async {

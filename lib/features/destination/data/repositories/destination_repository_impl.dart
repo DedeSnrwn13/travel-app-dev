@@ -24,6 +24,7 @@ class DestinationRepositoryImpl implements DestinationRepository {
   @override
   Future<Either<Failure, List<DestinationEntity>>> all() async {
     bool online = await networkInfo.isConnected();
+    print('Online: $online');
 
     if (online) {
       try {
