@@ -13,7 +13,7 @@ class AllDestinationBloc extends Bloc<AllDestinationEvent, AllDestinationState> 
     on<onGetAllDestination>((event, emit) async {
       emit(AllDestinationLoading());
 
-      final result = await _useCase.call();
+      final result = await _useCase();
       result.fold(
         (failure) => emit(AllDestinationFailure(failure.message)),
         (data) => emit(AllDestinationLoaded(data)),

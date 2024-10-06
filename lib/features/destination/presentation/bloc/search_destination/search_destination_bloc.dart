@@ -13,7 +13,7 @@ class SearchDestinationBloc extends Bloc<SearchDestinationEvent, SearchDestinati
     on<OnSearchDestination>((event, emit) async {
       emit(SearchDestinationLoading());
 
-      final result = await _useCase.call(query: event.query);
+      final result = await _useCase(query: event.query);
       result.fold(
         (failure) => emit(SearchDestinationFailure(failure.message)),
         (data) => emit(SearchDestinationLoaded(data)),

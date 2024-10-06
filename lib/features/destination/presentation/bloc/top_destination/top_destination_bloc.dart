@@ -12,8 +12,8 @@ class TopDestinationBloc extends Bloc<TopDestinationEvent, TopDestinationState> 
   TopDestinationBloc(this._useCase) : super(TopDestinationInitial()) {
     on<OnGetTopDestination>((event, emit) async {
       emit(TopDestinationLoading());
+      final result = await _useCase();
 
-      final result = await _useCase.call();
       result.fold(
         (failure) => emit(TopDestinationFailure(failure.message)),
         (data) => emit(TopDestinationLoaded(data)),
