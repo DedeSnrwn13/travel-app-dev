@@ -7,6 +7,7 @@ import 'package:travel_app/features/destination/domain/entities/destination_enti
 import 'package:travel_app/features/destination/presentation/bloc/all_destination/all_destination_bloc.dart';
 import 'package:travel_app/features/destination/presentation/bloc/search_destination/search_destination_bloc.dart';
 import 'package:travel_app/features/destination/presentation/widgets/circle_loading.dart';
+import 'package:travel_app/features/destination/presentation/widgets/parallax_vert_delegate.dart';
 import 'package:travel_app/features/destination/presentation/widgets/text_failure.dart';
 
 class SearchDestinationPage extends StatefulWidget {
@@ -78,37 +79,53 @@ class _SearchDestinationPageState extends State<SearchDestinationPage> {
   }
 
   AspectRatio itemSearch(DestinationEntity destination) {
+    final imageKey = GlobalKey();
+
     return AspectRatio(
       aspectRatio: 2,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          ExtendedImage.network(
-            URLs.image(destination.cover),
-            width: double.infinity,
-            fit: BoxFit.cover,
-            handleLoadingProgress: true,
-            loadStateChanged: (state) {
-              if (state.extendedImageLoadState == LoadState.failed) {
-                return Material(
-                  borderRadius: BorderRadius.circular(16),
-                  color: Colors.grey[300],
-                  child: const Icon(
-                    Icons.broken_image,
-                    color: Colors.black,
+          Builder(
+            builder: (context) {
+              return Flow(
+                delegate: ParallaxVertDelegate(
+                  scrollable: Scrollable.of(context),
+                  listItemContext: context,
+                  backgroundImageKey: imageKey,
+                ),
+                children: [
+                  ExtendedImage.network(
+                    URLs.image(destination.cover),
+                    key: imageKey,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    handleLoadingProgress: true,
+                    loadStateChanged: (state) {
+                      if (state.extendedImageLoadState == LoadState.failed) {
+                        return Material(
+                          borderRadius: BorderRadius.circular(16),
+                          color: Colors.grey[300],
+                          child: const Icon(
+                            Icons.broken_image,
+                            color: Colors.black,
+                          ),
+                        );
+                      }
+
+                      if (state.extendedImageLoadState == LoadState.loading) {
+                        return Material(
+                          borderRadius: BorderRadius.circular(16),
+                          color: Colors.grey[300],
+                          child: const CircleLoading(),
+                        );
+                      }
+
+                      return null;
+                    },
                   ),
-                );
-              }
-
-              if (state.extendedImageLoadState == LoadState.loading) {
-                return Material(
-                  borderRadius: BorderRadius.circular(16),
-                  color: Colors.grey[300],
-                  child: const CircleLoading(),
-                );
-              }
-
-              return null;
+                ],
+              );
             },
           ),
           Align(
