@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:travel_app/api/urls.dart';
+import 'package:travel_app/common/app_route.dart';
 import 'package:travel_app/features/destination/domain/entities/destination_entity.dart';
-import 'package:travel_app/features/destination/presentation/bloc/all_destination/all_destination_bloc.dart';
 import 'package:travel_app/features/destination/presentation/bloc/search_destination/search_destination_bloc.dart';
 import 'package:travel_app/features/destination/presentation/widgets/circle_loading.dart';
 import 'package:travel_app/features/destination/presentation/widgets/parallax_vert_delegate.dart';
@@ -19,6 +19,13 @@ class SearchDestinationPage extends StatefulWidget {
 
 class _SearchDestinationPageState extends State<SearchDestinationPage> {
   final edtSearch = TextEditingController();
+
+  @override
+  void initState() {
+    context.read<SearchDestinationBloc>().add(OnResetSearchDestination());
+
+    super.initState();
+  }
 
   search() {
     if (edtSearch.text == '') return;
@@ -78,116 +85,125 @@ class _SearchDestinationPageState extends State<SearchDestinationPage> {
     );
   }
 
-  AspectRatio itemSearch(DestinationEntity destination) {
+  Widget itemSearch(DestinationEntity destination) {
     final imageKey = GlobalKey();
 
-    return AspectRatio(
-      aspectRatio: 2,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Builder(
-            builder: (context) {
-              return Flow(
-                delegate: ParallaxVertDelegate(
-                  scrollable: Scrollable.of(context),
-                  listItemContext: context,
-                  backgroundImageKey: imageKey,
-                ),
-                children: [
-                  ExtendedImage.network(
-                    URLs.image(destination.cover),
-                    key: imageKey,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    handleLoadingProgress: true,
-                    loadStateChanged: (state) {
-                      if (state.extendedImageLoadState == LoadState.failed) {
-                        return Material(
-                          borderRadius: BorderRadius.circular(16),
-                          color: Colors.grey[300],
-                          child: const Icon(
-                            Icons.broken_image,
-                            color: Colors.black,
-                          ),
-                        );
-                      }
-
-                      if (state.extendedImageLoadState == LoadState.loading) {
-                        return Material(
-                          borderRadius: BorderRadius.circular(16),
-                          color: Colors.grey[300],
-                          child: const CircleLoading(),
-                        );
-                      }
-
-                      return null;
-                    },
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          AppRoute.detailDestination,
+          arguments: destination,
+        );
+      },
+      child: AspectRatio(
+        aspectRatio: 2,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Builder(
+              builder: (context) {
+                return Flow(
+                  delegate: ParallaxVertDelegate(
+                    scrollable: Scrollable.of(context),
+                    listItemContext: context,
+                    backgroundImageKey: imageKey,
                   ),
-                ],
-              );
-            },
-          ),
-          Align(
-            alignment: AlignmentDirectional.bottomCenter,
-            child: AspectRatio(
-              aspectRatio: 4,
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.black87,
-                      Colors.transparent,
-                    ],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                  ),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            destination.name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                    ExtendedImage.network(
+                      URLs.image(destination.cover),
+                      key: imageKey,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      handleLoadingProgress: true,
+                      loadStateChanged: (state) {
+                        if (state.extendedImageLoadState == LoadState.failed) {
+                          return Material(
+                            borderRadius: BorderRadius.circular(16),
+                            color: Colors.grey[300],
+                            child: const Icon(
+                              Icons.broken_image,
+                              color: Colors.black,
                             ),
-                          ),
-                          Text(
-                            destination.location,
-                            style: const TextStyle(
-                              color: Colors.white54,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
+                          );
+                        }
+
+                        if (state.extendedImageLoadState == LoadState.loading) {
+                          return Material(
+                            borderRadius: BorderRadius.circular(16),
+                            color: Colors.grey[300],
+                            child: const CircleLoading(),
+                          );
+                        }
+
+                        return null;
+                      },
                     ),
-                    RatingBar.builder(
-                      initialRating: destination.rate,
-                      allowHalfRating: true,
-                      unratedColor: Colors.grey,
-                      itemBuilder: (context, index) => const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                      ),
-                      onRatingUpdate: (value) {},
-                      itemCount: 15,
-                      ignoreGestures: true,
-                    )
                   ],
+                );
+              },
+            ),
+            Align(
+              alignment: AlignmentDirectional.bottomCenter,
+              child: AspectRatio(
+                aspectRatio: 4,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.black87,
+                        Colors.transparent,
+                      ],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                    ),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              destination.name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            ),
+                            Text(
+                              destination.location,
+                              style: const TextStyle(
+                                color: Colors.white54,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      RatingBar.builder(
+                        initialRating: destination.rate,
+                        allowHalfRating: true,
+                        unratedColor: Colors.grey,
+                        itemBuilder: (context, index) => const Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        onRatingUpdate: (value) {},
+                        itemCount: 15,
+                        ignoreGestures: true,
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

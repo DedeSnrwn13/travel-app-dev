@@ -19,5 +19,9 @@ class SearchDestinationBloc extends Bloc<SearchDestinationEvent, SearchDestinati
         (data) => emit(SearchDestinationLoaded(data)),
       );
     });
+
+    on<OnResetSearchDestination>((event, emit) async {
+      emit(SearchDestinationInitial());
+    });
   }
 }
