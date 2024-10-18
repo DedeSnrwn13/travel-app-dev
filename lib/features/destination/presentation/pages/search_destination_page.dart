@@ -1,4 +1,12 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:travel_app/api/urls.dart';
+import 'package:travel_app/features/destination/domain/entities/destination_entity.dart';
+import 'package:travel_app/features/destination/presentation/bloc/all_destination/all_destination_bloc.dart';
+import 'package:travel_app/features/destination/presentation/bloc/search_destination/search_destination_bloc.dart';
+import 'package:travel_app/features/destination/presentation/widgets/circle_loading.dart';
+import 'package:travel_app/features/destination/presentation/widgets/text_failure.dart';
 
 class SearchDestinationPage extends StatefulWidget {
   const SearchDestinationPage({super.key});
@@ -10,9 +18,16 @@ class SearchDestinationPage extends StatefulWidget {
 class _SearchDestinationPageState extends State<SearchDestinationPage> {
   final edtSearch = TextEditingController();
 
+  search() {
+    if (edtSearch.text == '') return;
+    context.read<SearchDestinationBloc>().add(OnSearchDestination(edtSearch.text));
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         color: Theme.of(context).primaryColor,
         padding: const EdgeInsets.only(
@@ -20,6 +35,82 @@ class _SearchDestinationPageState extends State<SearchDestinationPage> {
           bottom: 80,
         ),
         child: buildSearch(),
+      ),
+      bottomSheet: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(28),
+          topRight: Radius.circular(28),
+        ),
+        child: Container(
+          color: Colors.white,
+          height: MediaQuery.of(context).size.height - 140,
+          child: BlocBuilder<SearchDestinationBloc, SearchDestinationState>(
+            builder: (context, state) {
+              if (state is SearchDestinationLoaded) return const CircleLoading();
+
+              if (state is SearchDestinationFailure) return TextFailure(message: state.message);
+
+              if (state is SearchDestinationLoaded) {
+                List<DestinationEntity> list = state.data;
+
+                return ListView.builder(
+                  itemCount: list.length,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    DestinationEntity destination = list[index];
+
+                    return Container(
+                      margin: EdgeInsets.only(
+                        bottom: index == list.length - 1 ? 0 : 20,
+                      ),
+                      child: itemSearch(destination),
+                    );
+                  },
+                );
+              }
+              return Container();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  AspectRatio itemSearch(DestinationEntity destination) {
+    return AspectRatio(
+      aspectRatio: 2,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          ExtendedImage.network(
+            URLs.image(destination.cover),
+            width: double.infinity,
+            fit: BoxFit.cover,
+            handleLoadingProgress: true,
+            loadStateChanged: (state) {
+              if (state.extendedImageLoadState == LoadState.failed) {
+                return Material(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.grey[300],
+                  child: const Icon(
+                    Icons.broken_image,
+                    color: Colors.black,
+                  ),
+                );
+              }
+
+              if (state.extendedImageLoadState == LoadState.loading) {
+                return Material(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.grey[300],
+                  child: const CircleLoading(),
+                );
+              }
+
+              return null;
+            },
+          ),
+        ],
       ),
     );
   }
