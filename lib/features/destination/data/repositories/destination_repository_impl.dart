@@ -24,7 +24,6 @@ class DestinationRepositoryImpl implements DestinationRepository {
   @override
   Future<Either<Failure, List<DestinationEntity>>> all() async {
     bool online = await networkInfo.isConnected();
-    print('Online: $online');
 
     if (online) {
       try {
@@ -33,10 +32,12 @@ class DestinationRepositoryImpl implements DestinationRepository {
         return Right(result.map((e) => e.toEntity).toList());
       } on TimeoutException {
         return const Left(TimeoutFailure(message: 'Timeout. No Response'));
-      } on NotFoundException {
-        return const Left(NotFoundFailure(message: 'Data Not Found'));
+      } on NotFoundException catch (e) {
+        return Left(NotFoundFailure(message: e.message));
       } on ServerException {
         return const Left(ServerFailure(message: 'Server Error'));
+      } catch (e) {
+        return const Left(ServerFailure(message: 'Something went wrong'));
       }
     } else {
       try {
@@ -55,12 +56,14 @@ class DestinationRepositoryImpl implements DestinationRepository {
       return Right(result.map((e) => e.toEntity).toList());
     } on TimeoutException {
       return const Left(TimeoutFailure(message: 'Timeout. No Response'));
-    } on NotFoundException {
-      return const Left(NotFoundFailure(message: 'Data Not Found'));
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(message: e.message));
     } on ServerException {
       return const Left(ServerFailure(message: 'Server Error'));
     } on SocketException {
       return const Left(ConnectionFailure(message: 'Failed Connect to the Network'));
+    } catch (e) {
+      return const Left(ServerFailure(message: 'Something went wrong'));
     }
   }
 
@@ -71,12 +74,14 @@ class DestinationRepositoryImpl implements DestinationRepository {
       return Right(result.map((e) => e.toEntity).toList());
     } on TimeoutException {
       return const Left(TimeoutFailure(message: 'Timeout. No Response'));
-    } on NotFoundException {
-      return const Left(NotFoundFailure(message: 'Data Not Found'));
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(message: e.message));
     } on ServerException {
       return const Left(ServerFailure(message: 'Server Error'));
     } on SocketException {
       return const Left(ConnectionFailure(message: 'Failed Connect to the Network'));
+    } catch (e) {
+      return const Left(ServerFailure(message: 'Something went wrong'));
     }
   }
 }

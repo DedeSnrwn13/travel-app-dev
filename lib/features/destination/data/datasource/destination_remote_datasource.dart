@@ -27,7 +27,8 @@ class DestionationRemoteDataSourceImpl implements DestinationRemoteDataSource {
       List list = jsonDecode(response.body);
       return list.map((json) => DestinationModel.fromJson(json)).toList();
     } else if (response.statusCode == 404) {
-      throw NotFoundException();
+      Map body = jsonDecode(response.body);
+      throw NotFoundException(body['message']);
     } else {
       throw ServerException();
     }
@@ -44,7 +45,8 @@ class DestionationRemoteDataSourceImpl implements DestinationRemoteDataSource {
       List list = jsonDecode(response.body);
       return list.map((json) => DestinationModel.fromJson(json)).toList();
     } else if (response.statusCode == 404) {
-      throw NotFoundException();
+      Map body = jsonDecode(response.body);
+      throw NotFoundException(body['message']);
     } else {
       throw ServerException();
     }
@@ -59,7 +61,8 @@ class DestionationRemoteDataSourceImpl implements DestinationRemoteDataSource {
       List list = jsonDecode(response.body);
       return list.map((json) => DestinationModel.fromJson(json)).toList();
     } else if (response.statusCode == 404) {
-      throw NotFoundException();
+      Map body = jsonDecode(response.body);
+      throw NotFoundException(body['message']);
     } else {
       throw ServerException();
     }
